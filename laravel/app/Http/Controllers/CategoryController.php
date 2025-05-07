@@ -2,52 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Category;
-use Exception;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    // --- Get /api/categories
     public function getCategories()
     {
-        return response()->json(Category::all());
+        return response()->json(Category::all(), 200);
     }
 
-    // --- Post /api/categories
     public function createCategory(Request $request)
     {
-        try{
-            $request->validate([
-                'name' => 'required|string|max:255',
-            ]);
-            $category = Category::create($request->all());
-            return response()->json([
-                'message' => 'Category created Successfully',
-                'category' => $category
-            ], 201);
-        }catch(Exception $e){
-            return response()->json([
-                'message' => 'Category creation failed',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $category = Category::create($validated);
+
+        return response()->json($category, 201);
     }
-    // --- Get /api/categories/{categoryId}
+
     public function getCategory($categoryId)
     {
-        return ["message" => "Getting 1 category based on given categoryId: " . $categoryId];
+        $category = Category::find($categoryId);
+
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        return response()->json($category, 200);
     }
 
-    // --- Patch /api/categories/{categoryId}
-    public function updateCategory($categoryId)
+    public function updateCategory(Request $request, $categoryId)
     {
-        return ["message" => "Updating 1 category base on given categoryId"];
+        $category = Category::find($categoryId);
+
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $category->update($validated);
+
+        return response()->json($category, 200);
     }
 
-    // --- Delete /api/categories/{categoryId}
     public function deleteCategory($categoryId)
     {
-        return ["message" => "Deleting 1 category base on given categoryId"];
+        $category = Category::find($categoryId);
+
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        $category->delete(); // assuming soft deletes are enabled
+
+        return response()->json(['message' => 'Delete successful!'], 200);
     }
 }

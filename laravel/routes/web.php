@@ -29,12 +29,10 @@ Route::middleware('auth')->group(function () {
 Route::get('/upload_file', function () { return view('upload_file');})->name('uploads.local');
 Route::post('/upload', [UploadController::class, 'upload'])->name('uploads.local');
 
-Route::get('mini/upload_file', function () {
-    return view('Mnioupload_file');
-})->name('uploads.minio.form');
-Route::post('mini/upload', [MinioUploadController::class, 'upload'])->name('uploads.minio.submit');
+Route::get('minio/upload_file', function () { return view('Mnioupload_file');})->name('uploads.minio.form');
+Route::post('minio/upload', [MinioUploadController::class, 'upload'])->name('uploads.minio.submit');
 
-Route::post('/upload', [ImageController::class, 'store']);
+// Route::post('/upload', [ImageController::class, 'store']);
 
 
 require __DIR__.'/auth.php';
